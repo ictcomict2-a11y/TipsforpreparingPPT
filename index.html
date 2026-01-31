@@ -1,0 +1,1230 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🏃 سباق المعرفة</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@700;800;900&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Tajawal', sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; }
+        
+        body { height: 100vh; overflow: hidden; background: #0a0015; }
+        
+        .game { width: 100%; height: 100%; position: relative; overflow: hidden; }
+        
+        /* === SKY === */
+        .sky {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(180deg, 
+                #0a0015 0%,
+                #1a0530 15%,
+                #2a1050 30%,
+                #1a3045 50%,
+                #0d2520 70%,
+                #051510 100%
+            );
+        }
+        
+        /* Stars */
+        .stars { position: absolute; top: 0; left: 0; width: 100%; height: 45%; }
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle var(--d) ease-in-out infinite;
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+        
+        /* Moon */
+        .moon {
+            position: absolute;
+            top: 6%; right: 12%;
+            width: 100px; height: 100px;
+            background: radial-gradient(circle at 35% 35%, #fffef0, #ffe566, #ffc800);
+            border-radius: 50%;
+            box-shadow: 
+                0 0 80px 30px rgba(255,230,100,0.4),
+                0 0 150px 60px rgba(255,200,0,0.2),
+                inset -15px -10px 30px rgba(255,180,0,0.3);
+        }
+        
+        /* Clouds */
+        .clouds { position: absolute; top: 15%; width: 200%; height: 100px; animation: cloudsMove 30s linear infinite; }
+        .cloud {
+            position: absolute;
+            font-size: 4rem;
+            opacity: 0.15;
+            filter: blur(2px);
+        }
+        @keyframes cloudsMove { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        
+        /* Mountains */
+        .mountains { position: absolute; bottom: 28%; left: 0; width: 100%; height: 250px; }
+        .mountain {
+            position: absolute;
+            bottom: 0;
+            border-left: 100px solid transparent;
+            border-right: 100px solid transparent;
+            border-bottom: 180px solid;
+        }
+        .mountain:nth-child(1) { left: -8%; border-bottom-color: #1a3530; border-left-width: 120px; border-right-width: 120px; border-bottom-width: 200px; }
+        .mountain:nth-child(2) { left: 15%; border-bottom-color: #152a25; border-bottom-width: 160px; }
+        .mountain:nth-child(3) { left: 40%; border-bottom-color: #1a3530; border-left-width: 150px; border-right-width: 150px; border-bottom-width: 220px; }
+        .mountain:nth-child(4) { left: 65%; border-bottom-color: #102520; border-bottom-width: 170px; }
+        .mountain:nth-child(5) { left: 85%; border-bottom-color: #1a3530; border-left-width: 130px; border-right-width: 130px; border-bottom-width: 190px; }
+        
+        /* Ground glow */
+        .ground-glow {
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 100%; height: 35%;
+            background: radial-gradient(ellipse at 50% 100%, rgba(255,180,0,0.15) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        
+        /* === ROAD === */
+        .road-wrapper {
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 100%; height: 58%;
+            perspective: 500px;
+            overflow: hidden;
+        }
+        
+        .road {
+            position: absolute;
+            bottom: 0; left: 50%;
+            transform: translateX(-50%) rotateX(75deg);
+            width: 500px; height: 2500px;
+            background: linear-gradient(90deg,
+                #05050a 0%,
+                #12122a 8%,
+                #1a1a40 25%,
+                #202055 50%,
+                #1a1a40 75%,
+                #12122a 92%,
+                #05050a 100%
+            );
+            transform-origin: bottom center;
+        }
+        
+        .road-border-left, .road-border-right {
+            position: absolute;
+            bottom: 0;
+            width: 12px; height: 2500px;
+            background: linear-gradient(180deg, #ffd700, #ff8c00, #ffd700, #ff8c00);
+            background-size: 100% 100px;
+            transform: rotateX(75deg);
+            transform-origin: bottom center;
+            animation: borderGlow 2s ease-in-out infinite, roadScroll 0.15s linear infinite;
+            box-shadow: 0 0 30px rgba(255,215,0,0.8), 0 0 60px rgba(255,140,0,0.4);
+        }
+        .road-border-left { left: calc(50% - 256px); }
+        .road-border-right { left: calc(50% + 244px); }
+        
+        @keyframes borderGlow {
+            0%, 100% { box-shadow: 0 0 30px rgba(255,215,0,0.8), 0 0 60px rgba(255,140,0,0.4); }
+            50% { box-shadow: 0 0 50px rgba(255,215,0,1), 0 0 100px rgba(255,140,0,0.6); }
+        }
+        
+        @keyframes roadScroll {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 100px; }
+        }
+        
+        .road-lines {
+            position: absolute;
+            bottom: 0; left: 50%;
+            transform: translateX(-50%) rotateX(75deg);
+            width: 500px; height: 2500px;
+            background: repeating-linear-gradient(0deg,
+                transparent 0px,
+                transparent 50px,
+                rgba(255,215,0,0.3) 50px,
+                rgba(255,215,0,0.3) 90px
+            );
+            transform-origin: bottom center;
+            animation: roadScroll 0.15s linear infinite;
+        }
+        
+        .road-center {
+            position: absolute;
+            bottom: 0; left: 50%;
+            transform: translateX(-50%) rotateX(75deg);
+            width: 8px; height: 2500px;
+            background: repeating-linear-gradient(0deg,
+                #ffd700 0px, #ffd700 25px,
+                transparent 25px, transparent 50px
+            );
+            transform-origin: bottom center;
+            animation: roadScroll 0.15s linear infinite;
+            box-shadow: 0 0 25px rgba(255,215,0,0.7);
+        }
+        
+        /* Lanes indicators */
+        .lanes {
+            position: absolute;
+            bottom: 22%; left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 120px;
+            z-index: 5;
+        }
+        
+        .lane {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            opacity: 0.4;
+            transition: all 0.3s;
+        }
+        
+        .lane.correct { background: radial-gradient(circle, rgba(34,197,94,0.4), transparent); }
+        .lane.wrong { background: radial-gradient(circle, rgba(239,68,68,0.4), transparent); }
+        
+        .lane.active {
+            opacity: 1;
+            transform: scale(1.3);
+            animation: lanePulse 0.5s ease-out;
+        }
+        
+        @keyframes lanePulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.5); }
+            100% { transform: scale(1.3); }
+        }
+        
+        /* === RUNNER === */
+        .runner-wrap {
+            position: absolute;
+            bottom: 12%; left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            transition: left 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .runner-wrap.left { left: 28%; }
+        .runner-wrap.right { left: 72%; }
+        
+        .runner-shadow {
+            position: absolute;
+            bottom: -15px; left: 50%;
+            transform: translateX(-50%);
+            width: 100px; height: 35px;
+            background: radial-gradient(ellipse, rgba(0,0,0,0.6), transparent);
+            border-radius: 50%;
+        }
+        
+        .runner {
+            font-size: 6rem;
+            filter: drop-shadow(0 0 30px rgba(255,215,0,0.5));
+            position: relative;
+        }
+        
+        .runner.running { animation: run 0.12s steps(2) infinite; }
+        
+        @keyframes run {
+            0% { transform: translateY(0) rotate(-8deg) scaleX(1); }
+            50% { transform: translateY(-25px) rotate(8deg) scaleX(-1); }
+        }
+        
+        .runner.left-move { animation: moveLeft 0.35s ease-out; }
+        .runner.right-move { animation: moveRight 0.35s ease-out; }
+        
+        @keyframes moveLeft {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(-25deg); }
+        }
+        
+        @keyframes moveRight {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(25deg); }
+        }
+        
+        .runner.celebrate { animation: celebrate 0.6s ease-out; }
+        
+        @keyframes celebrate {
+            0% { transform: scale(1) translateY(0); }
+            30% { transform: scale(1.4) translateY(-40px) rotate(10deg); }
+            60% { transform: scale(1.2) translateY(-20px) rotate(-5deg); }
+            100% { transform: scale(1) translateY(0) rotate(0deg); }
+        }
+        
+        .runner.crash { animation: crash 0.7s ease-out forwards; }
+        
+        @keyframes crash {
+            0% { transform: scale(1) rotate(0); opacity: 1; }
+            30% { transform: scale(1.3) rotate(-30deg); }
+            60% { transform: scale(0.8) rotate(180deg); opacity: 0.5; }
+            100% { transform: scale(0.3) rotate(360deg) translateY(50px); opacity: 0; }
+        }
+        
+        /* Runner trail */
+        .runner-trail {
+            position: absolute;
+            bottom: 30px; left: 50%;
+            transform: translateX(-50%);
+            width: 60px; height: 60px;
+            pointer-events: none;
+        }
+        
+        .trail-particle {
+            position: absolute;
+            width: 10px; height: 10px;
+            background: #ffd700;
+            border-radius: 50%;
+            animation: trailFade 0.5s ease-out forwards;
+        }
+        
+        @keyframes trailFade {
+            0% { opacity: 0.8; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0) translateY(30px); }
+        }
+        
+        /* === HUD === */
+        .hud {
+            position: absolute;
+            top: 15px; left: 15px; right: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 50;
+        }
+        
+        .score-display {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0,0,0,0.6);
+            padding: 12px 25px;
+            border-radius: 50px;
+            border: 3px solid rgba(255,215,0,0.5);
+            box-shadow: 0 5px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,215,0,0.1);
+        }
+        
+        .score-icon { font-size: 2.2rem; animation: scoreFloat 2s ease-in-out infinite; }
+        @keyframes scoreFloat { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-5px) rotate(10deg); } }
+        
+        .score-num {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255,215,0,0.8);
+            min-width: 60px;
+        }
+        
+        .combo-display {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,50,50,0.3);
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: 3px solid #ff6b6b;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .combo-display.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .combo-display.bump { animation: comboBump 0.3s ease-out; }
+        @keyframes comboBump { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+        
+        .combo-icon { font-size: 1.8rem; animation: fireWave 0.5s ease-in-out infinite; }
+        @keyframes fireWave { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+        
+        .combo-num {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: #ff6b6b;
+            text-shadow: 0 0 15px rgba(255,107,107,0.8);
+        }
+        
+        .lives-display {
+            display: flex;
+            gap: 8px;
+            background: rgba(0,0,0,0.6);
+            padding: 10px 18px;
+            border-radius: 50px;
+            border: 3px solid rgba(255,100,100,0.4);
+        }
+        
+        .heart {
+            font-size: 2rem;
+            filter: drop-shadow(0 0 10px rgba(255,0,0,0.6));
+            transition: all 0.4s;
+        }
+        
+        .heart.lost { filter: grayscale(1) brightness(0.3); transform: scale(0.6); }
+        .heart.breaking { animation: heartBreak 0.6s ease-out forwards; }
+        
+        @keyframes heartBreak {
+            0% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(255,0,0,0.6)); }
+            30% { transform: scale(1.5); filter: brightness(2) drop-shadow(0 0 30px red); }
+            100% { transform: scale(0.6); filter: grayscale(1) brightness(0.3); }
+        }
+        
+        /* === QUESTION === */
+        .question-area {
+            position: absolute;
+            top: 90px; left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 550px;
+            z-index: 40;
+        }
+        
+        .question-card {
+            background: linear-gradient(135deg, rgba(0,0,0,0.9), rgba(20,10,50,0.9));
+            border: 4px solid #ffd700;
+            border-radius: 25px;
+            padding: 25px 30px;
+            text-align: center;
+            box-shadow: 
+                0 0 50px rgba(255,215,0,0.3),
+                0 20px 60px rgba(0,0,0,0.6),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .question-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,215,0,0.1), transparent);
+            animation: cardShine 3s ease-in-out infinite;
+        }
+        
+        @keyframes cardShine {
+            0%, 100% { left: -100%; }
+            50% { left: 100%; }
+        }
+        
+        .question-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,215,0,0.2);
+            padding: 8px 18px;
+            border-radius: 30px;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            color: #ffd700;
+        }
+        
+        .question-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            line-height: 1.7;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .question-card.correct {
+            border-color: #22c55e;
+            box-shadow: 0 0 60px rgba(34,197,94,0.5), 0 20px 60px rgba(0,0,0,0.6);
+        }
+        
+        .question-card.wrong {
+            border-color: #ef4444;
+            box-shadow: 0 0 60px rgba(239,68,68,0.5), 0 20px 60px rgba(0,0,0,0.6);
+            animation: cardShake 0.5s ease-out;
+        }
+        
+        @keyframes cardShake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-15px) rotate(-2deg); }
+            40% { transform: translateX(15px) rotate(2deg); }
+            60% { transform: translateX(-10px) rotate(-1deg); }
+            80% { transform: translateX(10px) rotate(1deg); }
+        }
+        
+        /* === CHOICE BUTTONS === */
+        .choices {
+            position: absolute;
+            bottom: 28%;
+            left: 0; right: 0;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 5%;
+            z-index: 30;
+        }
+        
+        .choice-btn {
+            width: 150px; height: 150px;
+            border-radius: 50%;
+            border: 6px solid;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .choice-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 0; height: 0;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.3s;
+        }
+        
+        .choice-btn:active::before {
+            width: 200%; height: 200%;
+        }
+        
+        .choice-btn.correct-btn {
+            border-color: #4ade80;
+            background: linear-gradient(135deg, rgba(34,197,94,0.4), rgba(34,197,94,0.1));
+            box-shadow: 0 0 40px rgba(34,197,94,0.4), inset 0 0 40px rgba(34,197,94,0.1);
+        }
+        
+        .choice-btn.wrong-btn {
+            border-color: #f87171;
+            background: linear-gradient(135deg, rgba(239,68,68,0.4), rgba(239,68,68,0.1));
+            box-shadow: 0 0 40px rgba(239,68,68,0.4), inset 0 0 40px rgba(239,68,68,0.1);
+        }
+        
+        .choice-btn:hover { transform: scale(1.15); }
+        .choice-btn:active { transform: scale(0.95); }
+        
+        .choice-btn .icon { font-size: 4rem; }
+        
+        .choice-btn .arrow {
+            position: absolute;
+            top: 50%; 
+            font-size: 2rem;
+            color: rgba(255,255,255,0.8);
+            animation: arrowPulse 1s ease-in-out infinite;
+        }
+        
+        .choice-btn.correct-btn .arrow { right: -40px; }
+        .choice-btn.wrong-btn .arrow { left: -40px; }
+        
+        @keyframes arrowPulse {
+            0%, 100% { transform: translateY(-50%) translateX(0); opacity: 0.5; }
+            50% { transform: translateY(-50%) translateX(5px); opacity: 1; }
+        }
+        
+        /* === PROGRESS === */
+        .progress-wrap {
+            position: absolute;
+            bottom: 12px;
+            left: 50%; transform: translateX(-50%);
+            width: 90%;
+            max-width: 450px;
+            z-index: 40;
+        }
+        
+        .progress-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .progress-dot {
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            transition: all 0.3s;
+        }
+        
+        .progress-dot.done {
+            background: #22c55e;
+            border-color: #22c55e;
+            box-shadow: 0 0 10px rgba(34,197,94,0.6);
+        }
+        
+        .progress-dot.current {
+            background: #ffd700;
+            border-color: #ffd700;
+            box-shadow: 0 0 15px rgba(255,215,0,0.8);
+            transform: scale(1.3);
+        }
+        
+        .progress-dot.failed {
+            background: #ef4444;
+            border-color: #ef4444;
+        }
+        
+        /* === FEEDBACK === */
+        .feedback {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10rem;
+            z-index: 70;
+            pointer-events: none;
+            opacity: 0;
+        }
+        
+        .feedback.show { animation: feedbackAnim 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+        
+        @keyframes feedbackAnim {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0) rotate(-30deg); }
+            40% { opacity: 1; transform: translate(-50%, -50%) scale(1.2) rotate(10deg); }
+            70% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(2) translateY(-30px); }
+        }
+        
+        .feedback.correct { filter: drop-shadow(0 0 60px rgba(34,197,94,1)); }
+        .feedback.wrong { filter: drop-shadow(0 0 60px rgba(239,68,68,1)); }
+        
+        /* Combo popup */
+        .combo-popup {
+            position: fixed;
+            top: 35%; left: 50%;
+            transform: translateX(-50%);
+            font-size: 3rem;
+            font-weight: 900;
+            color: #ffd700;
+            text-shadow: 0 0 30px #ffd700, 0 0 60px #ff8c00;
+            z-index: 65;
+            pointer-events: none;
+            opacity: 0;
+        }
+        
+        .combo-popup.show { animation: comboPopAnim 1.2s ease-out forwards; }
+        
+        @keyframes comboPopAnim {
+            0% { opacity: 0; transform: translateX(-50%) scale(0.5) translateY(0); }
+            30% { opacity: 1; transform: translateX(-50%) scale(1.3) translateY(-20px); }
+            100% { opacity: 0; transform: translateX(-50%) scale(1) translateY(-100px); }
+        }
+        
+        /* Score popup */
+        .score-popup {
+            position: fixed;
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #ffd700;
+            text-shadow: 0 0 20px #ffd700;
+            pointer-events: none;
+            z-index: 60;
+        }
+        
+        /* Particles */
+        .particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 55; }
+        
+        .particle {
+            position: absolute;
+            font-size: 2rem;
+            pointer-events: none;
+        }
+        
+        /* === SCREENS === */
+        .screen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(ellipse at center, rgba(20,10,50,0.98), rgba(5,0,15,0.99));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 20px;
+        }
+        
+        .screen.hidden { display: none; }
+        
+        .screen-icon {
+            font-size: 8rem;
+            margin-bottom: 10px;
+            animation: iconFloat 2.5s ease-in-out infinite;
+        }
+        
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+        
+        .screen-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffd700, #ff8c00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .screen-hint {
+            display: flex;
+            gap: 60px;
+            margin: 30px 0;
+        }
+        
+        .hint-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .hint-circle {
+            width: 100px; height: 100px;
+            border-radius: 50%;
+            border: 5px solid;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+        
+        .hint-item.correct .hint-circle {
+            border-color: #4ade80;
+            background: radial-gradient(circle, rgba(34,197,94,0.3), transparent);
+            box-shadow: 0 0 30px rgba(34,197,94,0.4);
+        }
+        
+        .hint-item.wrong .hint-circle {
+            border-color: #f87171;
+            background: radial-gradient(circle, rgba(239,68,68,0.3), transparent);
+            box-shadow: 0 0 30px rgba(239,68,68,0.4);
+        }
+        
+        .hint-arrow {
+            font-size: 2.5rem;
+            color: #888;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #ffd700, #ff8c00);
+            border: none;
+            border-radius: 60px;
+            padding: 22px 70px;
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: #1a0a30;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 50px rgba(255,215,0,0.4);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .btn:hover {
+            transform: scale(1.1) translateY(-5px);
+            box-shadow: 0 20px 70px rgba(255,215,0,0.5);
+        }
+        
+        .btn:active { transform: scale(1.05); }
+        
+        .final-score {
+            font-size: 7rem;
+            font-weight: 900;
+            color: #ffd700;
+            text-shadow: 0 0 50px rgba(255,215,0,0.6);
+            margin: 10px 0;
+        }
+        
+        .win-stars {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .win-star {
+            font-size: 4rem;
+            opacity: 0.2;
+            transform: scale(0.8);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .win-star.earned {
+            opacity: 1;
+            transform: scale(1);
+            animation: starPop 0.6s ease-out;
+        }
+        
+        @keyframes starPop {
+            0% { transform: scale(0) rotate(-180deg); }
+            60% { transform: scale(1.4) rotate(20deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+        
+        .win-message {
+            font-size: 1.3rem;
+            color: #22c55e;
+            margin: 15px 0;
+        }
+        
+        /* === MOBILE === */
+        @media (max-width: 600px) {
+            .choice-btn { width: 110px; height: 110px; }
+            .choice-btn .icon { font-size: 3rem; }
+            .choice-btn .arrow { display: none; }
+            .question-text { font-size: 1.25rem; }
+            .runner { font-size: 5rem; }
+            .screen-title { font-size: 2.5rem; }
+            .screen-icon { font-size: 6rem; }
+            .hint-circle { width: 80px; height: 80px; font-size: 2.5rem; }
+            .screen-hint { gap: 40px; }
+            .btn { padding: 18px 50px; font-size: 1.5rem; }
+            .final-score { font-size: 5rem; }
+            .win-star { font-size: 3rem; }
+            .moon { width: 60px; height: 60px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="game">
+        <div class="sky">
+            <div class="stars" id="stars"></div>
+            <div class="moon"></div>
+            <div class="clouds">
+                <span class="cloud" style="left:5%;top:10%">☁️</span>
+                <span class="cloud" style="left:25%;top:30%">☁️</span>
+                <span class="cloud" style="left:55%;top:5%">☁️</span>
+                <span class="cloud" style="left:75%;top:25%">☁️</span>
+                <span class="cloud" style="left:95%;top:15%">☁️</span>
+            </div>
+            <div class="mountains">
+                <div class="mountain"></div>
+                <div class="mountain"></div>
+                <div class="mountain"></div>
+                <div class="mountain"></div>
+                <div class="mountain"></div>
+            </div>
+            <div class="ground-glow"></div>
+        </div>
+        
+        <div class="road-wrapper">
+            <div class="road"></div>
+            <div class="road-lines"></div>
+            <div class="road-center"></div>
+            <div class="road-border-left"></div>
+            <div class="road-border-right"></div>
+        </div>
+        
+        <div class="lanes">
+            <div class="lane correct" id="laneLeft">✅</div>
+            <div class="lane wrong" id="laneRight">❌</div>
+        </div>
+        
+        <div class="runner-wrap" id="runnerWrap">
+            <div class="runner-shadow"></div>
+            <div class="runner-trail" id="trail"></div>
+            <div class="runner running" id="runner">🏃</div>
+        </div>
+        
+        <div class="hud">
+            <div class="score-display">
+                <span class="score-icon">⭐</span>
+                <span class="score-num" id="score">0</span>
+            </div>
+            <div class="combo-display" id="comboDisplay">
+                <span class="combo-icon">🔥</span>
+                <span class="combo-num" id="comboNum">x2</span>
+            </div>
+            <div class="lives-display">
+                <span class="heart" id="h0">❤️</span>
+                <span class="heart" id="h1">❤️</span>
+                <span class="heart" id="h2">❤️</span>
+            </div>
+        </div>
+        
+        <div class="question-area">
+            <div class="question-card" id="questionCard">
+                <div class="question-badge">
+                    <span>🎯</span>
+                    <span>هل هذا صحيح؟</span>
+                </div>
+                <div class="question-text" id="questionText">استعد!</div>
+            </div>
+        </div>
+        
+        <div class="choices">
+            <div class="choice-btn correct-btn" onclick="answer(true)">
+                <span class="icon">✅</span>
+                <span class="arrow">→</span>
+            </div>
+            <div class="choice-btn wrong-btn" onclick="answer(false)">
+                <span class="icon">❌</span>
+                <span class="arrow">←</span>
+            </div>
+        </div>
+        
+        <div class="progress-wrap">
+            <div class="progress-dots" id="progressDots"></div>
+        </div>
+        
+        <div class="feedback" id="feedback"></div>
+        <div class="combo-popup" id="comboPopup"></div>
+        <div class="particles" id="particles"></div>
+    </div>
+    
+    <!-- Start Screen -->
+    <div class="screen" id="startScreen">
+        <div class="screen-icon">🏃💨</div>
+        <h1 class="screen-title">سباق المعرفة</h1>
+        
+        <div class="screen-hint">
+            <div class="hint-item correct">
+                <div class="hint-circle">✅</div>
+                <div class="hint-arrow">⬅️</div>
+            </div>
+            <div class="hint-item wrong">
+                <div class="hint-circle">❌</div>
+                <div class="hint-arrow">➡️</div>
+            </div>
+        </div>
+        
+        <button class="btn" onclick="startGame()">
+            <span>🚀</span>
+            <span>ابدأ!</span>
+        </button>
+    </div>
+    
+    <!-- Game Over -->
+    <div class="screen hidden" id="gameOverScreen">
+        <div class="screen-icon">😢</div>
+        <h1 class="screen-title">حاول مرة أخرى!</h1>
+        <div class="final-score" id="finalScore">0</div>
+        <button class="btn" onclick="restart()">
+            <span>🔄</span>
+            <span>أعد</span>
+        </button>
+    </div>
+    
+    <!-- Win -->
+    <div class="screen hidden" id="winScreen">
+        <div class="screen-icon">🏆</div>
+        <h1 class="screen-title">أحسنت!</h1>
+        <div class="win-stars">
+            <span class="win-star" id="s0">⭐</span>
+            <span class="win-star" id="s1">⭐</span>
+            <span class="win-star" id="s2">⭐</span>
+        </div>
+        <div class="final-score" id="winScore">0</div>
+        <button class="btn" onclick="restart()">
+            <span>🔄</span>
+            <span>أعد</span>
+        </button>
+    </div>
+
+    <script>
+        const tips = [
+            { text: "خط واحد واضح 🔤", correct: true },
+            { text: "10 خطوط مختلفة 🔤🔤🔤", correct: false },
+            { text: "حجم خط كبير 📏", correct: true },
+            { text: "خط صغير جداً 🔍", correct: false },
+            { text: "صورة أو صورتين 🖼️🖼️", correct: true },
+            { text: "20 صورة في الشريحة 🖼️❌", correct: false },
+            { text: "ألوان قليلة متناسقة 🎨", correct: true },
+            { text: "كل الألوان معاً 🌈❌", correct: false },
+            { text: "ادرس الموضوع أولاً 📚", correct: true },
+            { text: "ابدأ بدون تحضير 😴", correct: false },
+            { text: "عرض قصير ومختصر ✂️", correct: true },
+            { text: "تدرب قبل التقديم 🎯", correct: true },
+        ];
+        
+        let currentTip = 0, score = 0, lives = 3, combo = 0;
+        let active = false, canAns = true, tipsList = [];
+        
+        // Stars
+        function makeStars() {
+            const c = document.getElementById('stars');
+            for (let i = 0; i < 100; i++) {
+                const s = document.createElement('div');
+                s.className = 'star';
+                s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;width:${Math.random()*3+1}px;height:${Math.random()*3+1}px;--d:${Math.random()*3+1}s`;
+                c.appendChild(s);
+            }
+        }
+        
+        // Progress dots
+        function makeDots() {
+            const c = document.getElementById('progressDots');
+            c.innerHTML = '';
+            for (let i = 0; i < tipsList.length; i++) {
+                const d = document.createElement('div');
+                d.className = 'progress-dot' + (i === 0 ? ' current' : '');
+                d.id = 'dot' + i;
+                c.appendChild(d);
+            }
+        }
+        
+        function shuffle(a) {
+            const b = [...a];
+            for (let i = b.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [b[i], b[j]] = [b[j], b[i]];
+            }
+            return b;
+        }
+        
+        function startGame() {
+            document.getElementById('startScreen').classList.add('hidden');
+            tipsList = shuffle(tips);
+            currentTip = 0; score = 0; lives = 3; combo = 0;
+            active = true; canAns = true;
+            
+            makeDots();
+            updateHUD();
+            showTip();
+            document.getElementById('runner').classList.add('running');
+        }
+        
+        function showTip() {
+            if (currentTip >= tipsList.length) { win(); return; }
+            
+            document.getElementById('questionText').textContent = tipsList[currentTip].text;
+            document.getElementById('questionCard').className = 'question-card';
+            
+            // Update dots
+            document.querySelectorAll('.progress-dot').forEach((d, i) => {
+                d.classList.remove('current');
+                if (i === currentTip) d.classList.add('current');
+            });
+            
+            canAns = true;
+        }
+        
+        function answer(isCorrect) {
+            if (!active || !canAns) return;
+            canAns = false;
+            
+            const tip = tipsList[currentTip];
+            const wrap = document.getElementById('runnerWrap');
+            const runner = document.getElementById('runner');
+            const card = document.getElementById('questionCard');
+            const fb = document.getElementById('feedback');
+            const dot = document.getElementById('dot' + currentTip);
+            const laneL = document.getElementById('laneLeft');
+            const laneR = document.getElementById('laneRight');
+            
+            // Move runner
+            wrap.classList.remove('left', 'right');
+            wrap.classList.add(isCorrect ? 'left' : 'right');
+            
+            runner.classList.remove('left-move', 'right-move');
+            runner.classList.add(isCorrect ? 'left-move' : 'right-move');
+            
+            // Highlight lane
+            laneL.classList.remove('active');
+            laneR.classList.remove('active');
+            (isCorrect ? laneL : laneR).classList.add('active');
+            
+            const right = isCorrect === tip.correct;
+            
+            if (right) {
+                combo++;
+                const mult = Math.min(combo, 5);
+                const pts = 10 * mult;
+                score += pts;
+                
+                card.classList.add('correct');
+                dot.classList.add('done');
+                
+                fb.textContent = '✅';
+                fb.className = 'feedback correct show';
+                
+                runner.classList.add('celebrate');
+                setTimeout(() => runner.classList.remove('celebrate'), 600);
+                
+                particles(true);
+                scorePopup(pts);
+                
+                if (combo >= 2) {
+                    document.getElementById('comboDisplay').classList.add('active', 'bump');
+                    document.getElementById('comboNum').textContent = 'x' + mult;
+                    setTimeout(() => document.getElementById('comboDisplay').classList.remove('bump'), 300);
+                    
+                    if (combo >= 3) comboText('🔥 x' + combo);
+                }
+                
+            } else {
+                combo = 0;
+                lives--;
+                
+                card.classList.add('wrong');
+                dot.classList.add('failed');
+                
+                document.getElementById('comboDisplay').classList.remove('active');
+                
+                fb.textContent = '❌';
+                fb.className = 'feedback wrong show';
+                
+                const h = document.getElementById('h' + lives);
+                h.classList.add('breaking');
+                setTimeout(() => { h.classList.remove('breaking'); h.classList.add('lost'); }, 600);
+                
+                runner.classList.remove('running');
+                runner.classList.add('crash');
+                
+                particles(false);
+                
+                if (lives <= 0) {
+                    setTimeout(gameOver, 900);
+                    return;
+                }
+                
+                setTimeout(() => { runner.classList.remove('crash'); runner.classList.add('running'); }, 700);
+            }
+            
+            updateHUD();
+            
+            setTimeout(() => {
+                wrap.classList.remove('left', 'right');
+                laneL.classList.remove('active');
+                laneR.classList.remove('active');
+                fb.className = 'feedback';
+                currentTip++;
+                showTip();
+            }, 1100);
+        }
+        
+        function particles(ok) {
+            const c = document.getElementById('particles');
+            const e = ok ? ['⭐', '✨', '💫', '🌟', '🎉'] : ['💔', '😢', '❌'];
+            const n = ok ? 20 : 8;
+            
+            for (let i = 0; i < n; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.textContent = e[Math.floor(Math.random() * e.length)];
+                p.style.left = (35 + Math.random() * 30) + '%';
+                p.style.top = '45%';
+                p.style.fontSize = (1.5 + Math.random() * 1.5) + 'rem';
+                c.appendChild(p);
+                
+                const angle = (Math.random() - 0.5) * Math.PI;
+                const speed = 150 + Math.random() * 200;
+                const vx = Math.cos(angle) * speed;
+                const vy = -Math.abs(Math.sin(angle) * speed) - 50;
+                let x = 0, y = 0, o = 1, g = 0;
+                
+                const run = () => {
+                    g += 8;
+                    x += vx * 0.016;
+                    y += (vy + g) * 0.016;
+                    o -= 0.02;
+                    p.style.transform = `translate(${x}px, ${y}px) rotate(${x}deg)`;
+                    p.style.opacity = Math.max(0, o);
+                    if (o > 0) requestAnimationFrame(run);
+                    else p.remove();
+                };
+                setTimeout(() => requestAnimationFrame(run), i * 30);
+            }
+        }
+        
+        function scorePopup(pts) {
+            const p = document.createElement('div');
+            p.className = 'score-popup';
+            p.textContent = '+' + pts;
+            p.style.left = '50%';
+            p.style.top = '50%';
+            p.style.transform = 'translate(-50%, -50%)';
+            document.body.appendChild(p);
+            
+            let y = 0, o = 1;
+            const run = () => {
+                y -= 3;
+                o -= 0.025;
+                p.style.transform = `translate(-50%, -50%) translateY(${y}px)`;
+                p.style.opacity = o;
+                if (o > 0) requestAnimationFrame(run);
+                else p.remove();
+            };
+            requestAnimationFrame(run);
+        }
+        
+        function comboText(txt) {
+            const el = document.getElementById('comboPopup');
+            el.textContent = txt;
+            el.classList.remove('show');
+            void el.offsetWidth;
+            el.classList.add('show');
+        }
+        
+        function updateHUD() {
+            document.getElementById('score').textContent = score;
+        }
+        
+        function gameOver() {
+            active = false;
+            document.getElementById('runner').className = 'runner';
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('gameOverScreen').classList.remove('hidden');
+        }
+        
+        function win() {
+            active = false;
+            document.getElementById('runner').className = 'runner';
+            document.getElementById('winScore').textContent = score;
+            document.getElementById('winScreen').classList.remove('hidden');
+            
+            const pct = score / (tips.length * 30);
+            setTimeout(() => document.getElementById('s0').classList.add('earned'), 300);
+            if (pct >= 0.4) setTimeout(() => document.getElementById('s1').classList.add('earned'), 600);
+            if (pct >= 0.7) setTimeout(() => document.getElementById('s2').classList.add('earned'), 900);
+            
+            // Win particles
+            for (let i = 0; i < 5; i++) setTimeout(() => particles(true), i * 200);
+        }
+        
+        function restart() {
+            document.getElementById('gameOverScreen').classList.add('hidden');
+            document.getElementById('winScreen').classList.add('hidden');
+            document.querySelectorAll('.heart').forEach(h => h.classList.remove('lost', 'breaking'));
+            document.querySelectorAll('.win-star').forEach(s => s.classList.remove('earned'));
+            document.getElementById('comboDisplay').classList.remove('active');
+            startGame();
+        }
+        
+        // Controls
+        document.addEventListener('keydown', e => {
+            if (!active) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    const start = document.getElementById('startScreen');
+                    if (!start.classList.contains('hidden')) startGame();
+                    else restart();
+                }
+                return;
+            }
+            if (e.key === 'ArrowLeft') { e.preventDefault(); answer(true); }
+            else if (e.key === 'ArrowRight') { e.preventDefault(); answer(false); }
+        });
+        
+        // Touch
+        let tx = 0;
+        document.addEventListener('touchstart', e => tx = e.touches[0].clientX, { passive: true });
+        document.addEventListener('touchend', e => {
+            if (!active) return;
+            const d = e.changedTouches[0].clientX - tx;
+            if (Math.abs(d) > 40) answer(d < 0);
+        }, { passive: true });
+        
+        makeStars();
+    </script>
+</body>
+</html>
