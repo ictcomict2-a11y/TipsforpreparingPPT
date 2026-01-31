@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>🏃 سباق المعرفة</title>
+    <title>🏃سباق إعداد العرض التقديمي</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@700;800;900&display=swap');
         
@@ -269,28 +268,6 @@
             100% { transform: scale(0.3) rotate(360deg) translateY(50px); opacity: 0; }
         }
         
-        /* Runner trail */
-        .runner-trail {
-            position: absolute;
-            bottom: 30px; left: 50%;
-            transform: translateX(-50%);
-            width: 60px; height: 60px;
-            pointer-events: none;
-        }
-        
-        .trail-particle {
-            position: absolute;
-            width: 10px; height: 10px;
-            background: #ffd700;
-            border-radius: 50%;
-            animation: trailFade 0.5s ease-out forwards;
-        }
-        
-        @keyframes trailFade {
-            0% { opacity: 0.8; transform: scale(1); }
-            100% { opacity: 0; transform: scale(0) translateY(30px); }
-        }
-        
         /* === HUD === */
         .hud {
             position: absolute;
@@ -542,15 +519,15 @@
         .progress-dots {
             display: flex;
             justify-content: center;
-            gap: 8px;
+            gap: 15px;
             margin-bottom: 8px;
         }
         
         .progress-dot {
-            width: 14px; height: 14px;
+            width: 20px; height: 20px;
             border-radius: 50%;
             background: rgba(255,255,255,0.2);
-            border: 2px solid rgba(255,255,255,0.3);
+            border: 3px solid rgba(255,255,255,0.3);
             transition: all 0.3s;
         }
         
@@ -670,6 +647,7 @@
             background: linear-gradient(135deg, #ffd700, #ff8c00);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
             margin-bottom: 20px;
             text-align: center;
         }
@@ -770,12 +748,6 @@
             100% { transform: scale(1) rotate(0deg); }
         }
         
-        .win-message {
-            font-size: 1.3rem;
-            color: #22c55e;
-            margin: 15px 0;
-        }
-        
         /* === MOBILE === */
         @media (max-width: 600px) {
             .choice-btn { width: 110px; height: 110px; }
@@ -831,7 +803,6 @@
         
         <div class="runner-wrap" id="runnerWrap">
             <div class="runner-shadow"></div>
-            <div class="runner-trail" id="trail"></div>
             <div class="runner running" id="runner">🏃</div>
         </div>
         
@@ -855,7 +826,7 @@
             <div class="question-card" id="questionCard">
                 <div class="question-badge">
                     <span>🎯</span>
-                    <span>هل هذا صحيح؟</span>
+                    <span>صح أم خطأ؟</span>
                 </div>
                 <div class="question-text" id="questionText">استعد!</div>
             </div>
@@ -931,61 +902,73 @@
     </div>
 
     <script>
+        // 6 أسئلة فقط - نصائح العرض التقديمي
         const tips = [
-            { text: "خط واحد واضح 🔤", correct: true },
-            { text: "10 خطوط مختلفة 🔤🔤🔤", correct: false },
-            { text: "حجم خط كبير 📏", correct: true },
-            { text: "خط صغير جداً 🔍", correct: false },
-            { text: "صورة أو صورتين 🖼️🖼️", correct: true },
-            { text: "20 صورة في الشريحة 🖼️❌", correct: false },
-            { text: "ألوان قليلة متناسقة 🎨", correct: true },
-            { text: "كل الألوان معاً 🌈❌", correct: false },
-            { text: "ادرس الموضوع أولاً 📚", correct: true },
-            { text: "ابدأ بدون تحضير 😴", correct: false },
-            { text: "عرض قصير ومختصر ✂️", correct: true },
-            { text: "تدرب قبل التقديم 🎯", correct: true },
+            { text: "استخدم خط واحد واضح", correct: true },
+            { text: "اكتب بخط صغير جداً", correct: false },
+            { text: "صورة أو صورتين تكفي", correct: true },
+            { text: " مئة صورة في الشريحة الواحدة", correct: false },
+            { text: "ادرس الموضوع قبل العرض", correct: true },
+            { text: "ابدأ بدون أي تحضير", correct: false }
         ];
         
-        let currentTip = 0, score = 0, lives = 3, combo = 0;
-        let active = false, canAns = true, tipsList = [];
+        let currentTip = 0;
+        let score = 0;
+        let lives = 3;
+        let combo = 0;
+        let active = false;
+        let canAns = true;
+        let tipsList = [];
         
-        // Stars
+        // إنشاء النجوم
         function makeStars() {
-            const c = document.getElementById('stars');
-            for (let i = 0; i < 100; i++) {
-                const s = document.createElement('div');
-                s.className = 'star';
-                s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;width:${Math.random()*3+1}px;height:${Math.random()*3+1}px;--d:${Math.random()*3+1}s`;
-                c.appendChild(s);
+            const container = document.getElementById('stars');
+            for (let i = 0; i < 80; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.cssText = `
+                    left: ${Math.random() * 100}%;
+                    top: ${Math.random() * 100}%;
+                    width: ${Math.random() * 3 + 1}px;
+                    height: ${Math.random() * 3 + 1}px;
+                    --d: ${Math.random() * 3 + 1}s
+                `;
+                container.appendChild(star);
             }
         }
         
-        // Progress dots
+        // إنشاء نقاط التقدم
         function makeDots() {
-            const c = document.getElementById('progressDots');
-            c.innerHTML = '';
+            const container = document.getElementById('progressDots');
+            container.innerHTML = '';
             for (let i = 0; i < tipsList.length; i++) {
-                const d = document.createElement('div');
-                d.className = 'progress-dot' + (i === 0 ? ' current' : '');
-                d.id = 'dot' + i;
-                c.appendChild(d);
+                const dot = document.createElement('div');
+                dot.className = 'progress-dot' + (i === 0 ? ' current' : '');
+                dot.id = 'dot' + i;
+                container.appendChild(dot);
             }
         }
         
-        function shuffle(a) {
-            const b = [...a];
-            for (let i = b.length - 1; i > 0; i--) {
+        // خلط الأسئلة
+        function shuffle(array) {
+            const result = [...array];
+            for (let i = result.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [b[i], b[j]] = [b[j], b[i]];
+                [result[i], result[j]] = [result[j], result[i]];
             }
-            return b;
+            return result;
         }
         
+        // بدء اللعبة
         function startGame() {
             document.getElementById('startScreen').classList.add('hidden');
             tipsList = shuffle(tips);
-            currentTip = 0; score = 0; lives = 3; combo = 0;
-            active = true; canAns = true;
+            currentTip = 0;
+            score = 0;
+            lives = 3;
+            combo = 0;
+            active = true;
+            canAns = true;
             
             makeDots();
             updateHUD();
@@ -993,21 +976,26 @@
             document.getElementById('runner').classList.add('running');
         }
         
+        // عرض السؤال
         function showTip() {
-            if (currentTip >= tipsList.length) { win(); return; }
+            if (currentTip >= tipsList.length) {
+                win();
+                return;
+            }
             
             document.getElementById('questionText').textContent = tipsList[currentTip].text;
             document.getElementById('questionCard').className = 'question-card';
             
-            // Update dots
-            document.querySelectorAll('.progress-dot').forEach((d, i) => {
-                d.classList.remove('current');
-                if (i === currentTip) d.classList.add('current');
+            // تحديث النقاط
+            document.querySelectorAll('.progress-dot').forEach((dot, i) => {
+                dot.classList.remove('current');
+                if (i === currentTip) dot.classList.add('current');
             });
             
             canAns = true;
         }
         
+        // الإجابة
         function answer(isCorrect) {
             if (!active || !canAns) return;
             canAns = false;
@@ -1021,21 +1009,22 @@
             const laneL = document.getElementById('laneLeft');
             const laneR = document.getElementById('laneRight');
             
-            // Move runner
+            // تحريك العداء
             wrap.classList.remove('left', 'right');
             wrap.classList.add(isCorrect ? 'left' : 'right');
             
             runner.classList.remove('left-move', 'right-move');
             runner.classList.add(isCorrect ? 'left-move' : 'right-move');
             
-            // Highlight lane
+            // إضاءة المسار
             laneL.classList.remove('active');
             laneR.classList.remove('active');
             (isCorrect ? laneL : laneR).classList.add('active');
             
-            const right = isCorrect === tip.correct;
+            const isRight = isCorrect === tip.correct;
             
-            if (right) {
+            if (isRight) {
+                // إجابة صحيحة
                 combo++;
                 const mult = Math.min(combo, 5);
                 const pts = 10 * mult;
@@ -1062,6 +1051,7 @@
                 }
                 
             } else {
+                // إجابة خاطئة
                 combo = 0;
                 lives--;
                 
@@ -1073,9 +1063,14 @@
                 fb.textContent = '❌';
                 fb.className = 'feedback wrong show';
                 
-                const h = document.getElementById('h' + lives);
-                h.classList.add('breaking');
-                setTimeout(() => { h.classList.remove('breaking'); h.classList.add('lost'); }, 600);
+                const heart = document.getElementById('h' + lives);
+                if (heart) {
+                    heart.classList.add('breaking');
+                    setTimeout(() => {
+                        heart.classList.remove('breaking');
+                        heart.classList.add('lost');
+                    }, 600);
+                }
                 
                 runner.classList.remove('running');
                 runner.classList.add('crash');
@@ -1087,7 +1082,10 @@
                     return;
                 }
                 
-                setTimeout(() => { runner.classList.remove('crash'); runner.classList.add('running'); }, 700);
+                setTimeout(() => {
+                    runner.classList.remove('crash');
+                    runner.classList.add('running');
+                }, 700);
             }
             
             updateHUD();
@@ -1102,61 +1100,64 @@
             }, 1100);
         }
         
-        function particles(ok) {
-            const c = document.getElementById('particles');
-            const e = ok ? ['⭐', '✨', '💫', '🌟', '🎉'] : ['💔', '😢', '❌'];
-            const n = ok ? 20 : 8;
+        // تأثير الجزيئات
+        function particles(success) {
+            const container = document.getElementById('particles');
+            const emojis = success ? ['⭐', '✨', '💫', '🌟'] : ['💔', '😢'];
+            const count = success ? 15 : 6;
             
-            for (let i = 0; i < n; i++) {
-                const p = document.createElement('div');
-                p.className = 'particle';
-                p.textContent = e[Math.floor(Math.random() * e.length)];
-                p.style.left = (35 + Math.random() * 30) + '%';
-                p.style.top = '45%';
-                p.style.fontSize = (1.5 + Math.random() * 1.5) + 'rem';
-                c.appendChild(p);
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                particle.style.left = (35 + Math.random() * 30) + '%';
+                particle.style.top = '45%';
+                particle.style.fontSize = (1.5 + Math.random() * 1.5) + 'rem';
+                container.appendChild(particle);
                 
                 const angle = (Math.random() - 0.5) * Math.PI;
                 const speed = 150 + Math.random() * 200;
                 const vx = Math.cos(angle) * speed;
                 const vy = -Math.abs(Math.sin(angle) * speed) - 50;
-                let x = 0, y = 0, o = 1, g = 0;
+                let x = 0, y = 0, opacity = 1, gravity = 0;
                 
-                const run = () => {
-                    g += 8;
+                const animate = () => {
+                    gravity += 8;
                     x += vx * 0.016;
-                    y += (vy + g) * 0.016;
-                    o -= 0.02;
-                    p.style.transform = `translate(${x}px, ${y}px) rotate(${x}deg)`;
-                    p.style.opacity = Math.max(0, o);
-                    if (o > 0) requestAnimationFrame(run);
-                    else p.remove();
+                    y += (vy + gravity) * 0.016;
+                    opacity -= 0.02;
+                    particle.style.transform = `translate(${x}px, ${y}px) rotate(${x}deg)`;
+                    particle.style.opacity = Math.max(0, opacity);
+                    if (opacity > 0) requestAnimationFrame(animate);
+                    else particle.remove();
                 };
-                setTimeout(() => requestAnimationFrame(run), i * 30);
+                setTimeout(() => requestAnimationFrame(animate), i * 30);
             }
         }
         
+        // نافذة النقاط
         function scorePopup(pts) {
-            const p = document.createElement('div');
-            p.className = 'score-popup';
-            p.textContent = '+' + pts;
-            p.style.left = '50%';
-            p.style.top = '50%';
-            p.style.transform = 'translate(-50%, -50%)';
-            document.body.appendChild(p);
+            const popup = document.createElement('div');
+            popup.className = 'score-popup';
+            popup.textContent = '+' + pts;
+            popup.style.left = '50%';
+            popup.style.top = '50%';
+            popup.style.transform = 'translate(-50%, -50%)';
+            document.body.appendChild(popup);
             
-            let y = 0, o = 1;
-            const run = () => {
+            let y = 0, opacity = 1;
+            const animate = () => {
                 y -= 3;
-                o -= 0.025;
-                p.style.transform = `translate(-50%, -50%) translateY(${y}px)`;
-                p.style.opacity = o;
-                if (o > 0) requestAnimationFrame(run);
-                else p.remove();
+                opacity -= 0.025;
+                popup.style.transform = `translate(-50%, -50%) translateY(${y}px)`;
+                popup.style.opacity = opacity;
+                if (opacity > 0) requestAnimationFrame(animate);
+                else popup.remove();
             };
-            requestAnimationFrame(run);
+            requestAnimationFrame(animate);
         }
         
+        // نص الكومبو
         function comboText(txt) {
             const el = document.getElementById('comboPopup');
             el.textContent = txt;
@@ -1165,10 +1166,12 @@
             el.classList.add('show');
         }
         
+        // تحديث الواجهة
         function updateHUD() {
             document.getElementById('score').textContent = score;
         }
         
+        // نهاية اللعبة
         function gameOver() {
             active = false;
             document.getElementById('runner').className = 'runner';
@@ -1176,54 +1179,83 @@
             document.getElementById('gameOverScreen').classList.remove('hidden');
         }
         
+        // الفوز
         function win() {
             active = false;
             document.getElementById('runner').className = 'runner';
             document.getElementById('winScore').textContent = score;
             document.getElementById('winScreen').classList.remove('hidden');
             
-            const pct = score / (tips.length * 30);
-            setTimeout(() => document.getElementById('s0').classList.add('earned'), 300);
-            if (pct >= 0.4) setTimeout(() => document.getElementById('s1').classList.add('earned'), 600);
-            if (pct >= 0.7) setTimeout(() => document.getElementById('s2').classList.add('earned'), 900);
+            // حساب النجوم
+            const maxScore = tips.length * 30;
+            const percentage = score / maxScore;
             
-            // Win particles
-            for (let i = 0; i < 5; i++) setTimeout(() => particles(true), i * 200);
+            setTimeout(() => document.getElementById('s0').classList.add('earned'), 300);
+            if (percentage >= 0.4) setTimeout(() => document.getElementById('s1').classList.add('earned'), 600);
+            if (percentage >= 0.7) setTimeout(() => document.getElementById('s2').classList.add('earned'), 900);
+            
+            // تأثيرات الفوز
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => particles(true), i * 200);
+            }
         }
         
+        // إعادة اللعبة
         function restart() {
             document.getElementById('gameOverScreen').classList.add('hidden');
             document.getElementById('winScreen').classList.add('hidden');
-            document.querySelectorAll('.heart').forEach(h => h.classList.remove('lost', 'breaking'));
-            document.querySelectorAll('.win-star').forEach(s => s.classList.remove('earned'));
+            
+            document.querySelectorAll('.heart').forEach(h => {
+                h.classList.remove('lost', 'breaking');
+            });
+            document.querySelectorAll('.win-star').forEach(s => {
+                s.classList.remove('earned');
+            });
             document.getElementById('comboDisplay').classList.remove('active');
+            
             startGame();
         }
         
-        // Controls
+        // التحكم بلوحة المفاتيح
         document.addEventListener('keydown', e => {
             if (!active) {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    const start = document.getElementById('startScreen');
-                    if (!start.classList.contains('hidden')) startGame();
-                    else restart();
+                    const startScreen = document.getElementById('startScreen');
+                    if (!startScreen.classList.contains('hidden')) {
+                        startGame();
+                    } else {
+                        restart();
+                    }
                 }
                 return;
             }
-            if (e.key === 'ArrowLeft') { e.preventDefault(); answer(true); }
-            else if (e.key === 'ArrowRight') { e.preventDefault(); answer(false); }
+            
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                answer(true);
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                answer(false);
+            }
         });
         
-        // Touch
-        let tx = 0;
-        document.addEventListener('touchstart', e => tx = e.touches[0].clientX, { passive: true });
-        document.addEventListener('touchend', e => {
-            if (!active) return;
-            const d = e.changedTouches[0].clientX - tx;
-            if (Math.abs(d) > 40) answer(d < 0);
+        // التحكم باللمس
+        let touchStartX = 0;
+        
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.touches[0].clientX;
         }, { passive: true });
         
+        document.addEventListener('touchend', e => {
+            if (!active) return;
+            const diff = e.changedTouches[0].clientX - touchStartX;
+            if (Math.abs(diff) > 40) {
+                answer(diff < 0);
+            }
+        }, { passive: true });
+        
+        // تهيئة اللعبة
         makeStars();
     </script>
 </body>
